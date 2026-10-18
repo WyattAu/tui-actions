@@ -1,0 +1,45 @@
+[package]
+name = "tui-actions"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+authors = ["Wyatt Au <wyatt_au@protonmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/WyattAu/tui-actions"
+homepage = "https://github.com/WyattAu/tui-actions"
+documentation = "https://docs.rs/tui-actions"
+description = "Terminal action/keymap layer for Rust — chord parsing (ctrl+s, leader sequences), modal context stacks, conflict and unbound-key detection, help rows derived from the live keymap. No terminal dependency"
+readme = "README.md"
+keywords = ["tui", "keymap", "chord", "keyboard", "accessibility"]
+categories = ["command-line-interface"]
+exclude = [".github/", "supply-chain/"]
+
+# Layer model: docs/layers.md in WyattAu/engineering-standards.
+# L2 — domain: estate dep none (the shared input layer, per ADR-0004 §2.4 —
+# pure logic, zero estate edges, zero terminal deps). Declared L2 because it
+# is consumed by composition crates (kestrel, suture-tui, aileron).
+[package.metadata.layers]
+tier = "L2"
+
+[dependencies]
+thiserror = "2"
+
+[lints.rust]
+missing_docs = "deny"
+unsafe_code = "deny"
+
+# Keymap discipline: key chords and actions are user configuration (JSON,
+# TOML, Lua tables in the wild). Parsing is total — unknown or malformed
+# input is a typed error, never a panic. Test targets lift these at file
+# level with justification.
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
+undocumented_unsafe_blocks = "deny"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+strip = true
