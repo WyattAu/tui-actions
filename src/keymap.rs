@@ -142,12 +142,7 @@ impl Keymap {
     /// # Errors
     /// [`ActionsError`] on malformed chords and on conflicts (a chord already
     /// bound in this mode — the check that keeps vim muscle memory honest).
-    pub fn bind(
-        &mut self,
-        chord: &str,
-        action: Action,
-        doc: &str,
-    ) -> Result<(), ActionsError> {
+    pub fn bind(&mut self, chord: &str, action: Action, doc: &str) -> Result<(), ActionsError> {
         let mode = self.default_mode.clone();
         self.bind_in(&mode, chord, action, doc)
     }
@@ -237,10 +232,10 @@ impl Keymap {
             .iter()
             .filter(|b| {
                 b.chord.steps().len() == consumed
-                    && events.iter().enumerate().all(|(i, e)| {
-                        b.chord
-                            .matches_prefix(&[*e], i)
-                    })
+                    && events
+                        .iter()
+                        .enumerate()
+                        .all(|(i, e)| b.chord.matches_prefix(&[*e], i))
             })
             .map(|b| b.action.clone())
             .collect()

@@ -9,18 +9,22 @@
     clippy::panic
 )]
 
-use tui_actions::{
-    Action, ActionsError, Key, KeyChord, KeyEvent, Keymap, Mode, ModeStack,
-};
+use tui_actions::{Action, ActionsError, Key, KeyChord, KeyEvent, Keymap, Mode, ModeStack};
 
 fn sample() -> Keymap {
     let mut map = Keymap::new(Mode::Normal);
     map.bind("ctrl+s", Action::new("file.save"), "Save the document")
         .unwrap();
     map.bind("q", Action::new("app.quit"), "Quit").unwrap();
-    map.bind("g g", Action::new("view.top"), "Go to top").unwrap();
-    map.bind_in(&Mode::Insert, "esc", Action::new("edit.finish"), "Leave insert")
+    map.bind("g g", Action::new("view.top"), "Go to top")
         .unwrap();
+    map.bind_in(
+        &Mode::Insert,
+        "esc",
+        Action::new("edit.finish"),
+        "Leave insert",
+    )
+    .unwrap();
     map
 }
 
@@ -35,7 +39,11 @@ fn chords_parse_the_conventions_tuis_speak() {
     assert!(step.modifiers.ctrl && step.modifiers.shift && step.modifiers.alt);
 
     let seq = KeyChord::parse("g g").unwrap();
-    assert_eq!(seq.steps().len(), 2, "spaces separate steps, not just modifiers");
+    assert_eq!(
+        seq.steps().len(),
+        2,
+        "spaces separate steps, not just modifiers"
+    );
 
     let f = KeyChord::parse("f12").unwrap();
     assert_eq!(f.steps().first().unwrap().key, Key::Function(12));
@@ -50,7 +58,10 @@ fn chord_display_round_trips() {
         let chord = KeyChord::parse(src).unwrap();
         let rendered = chord.to_string();
         let again = KeyChord::parse(&rendered).unwrap();
-        assert_eq!(chord, again, "{src} must round-trip through its display form");
+        assert_eq!(
+            chord, again,
+            "{src} must round-trip through its display form"
+        );
     }
 }
 
@@ -86,7 +97,12 @@ fn duplicate_bindings_are_rejected_with_both_actions() {
         .bind("ctrl+s", Action::new("file.save_as"), "Save as")
         .unwrap_err();
     match err {
-        ActionsError::Conflict { chord, first, second, mode } => {
+        ActionsError::Conflict {
+            chord,
+            first,
+            second,
+            mode,
+        } => {
             assert_eq!(chord, "ctrl+s");
             assert_eq!(first, "file.save");
             assert_eq!(second, "file.save_as");
@@ -128,9 +144,17 @@ fn single_step_chords_resolve() {
 fn multi_step_chords_complete_and_report_pending() {
     let map = sample();
     let g = KeyEvent::plain(Key::Char('g'));
-    assert!(map.is_prefix(&Mode::Normal, &g), "'g' starts the 'g g' sequence");
-    assert!(map.complete(&Mode::Normal, &[g, g]).contains(&Action::new("view.top")));
-    assert!(map.complete(&Mode::Normal, &[g]).is_empty(), "one 'g' is not the action");
+    assert!(
+        map.is_prefix(&Mode::Normal, &g),
+        "'g' starts the 'g g' sequence"
+    );
+    assert!(map
+        .complete(&Mode::Normal, &[g, g])
+        .contains(&Action::new("view.top")));
+    assert!(
+        map.complete(&Mode::Normal, &[g]).is_empty(),
+        "one 'g' is not the action"
+    );
     assert!(map.is_unbound(&Mode::Normal, &[g, g, g]));
 }
 
@@ -149,7 +173,10 @@ fn mode_stack_owns_input_by_stack_order() {
     assert_eq!(stack.active(), Some(&Mode::Normal));
     stack.push(Mode::Popup);
     assert_eq!(stack.active(), Some(&Mode::Popup));
-    assert!(stack.contains(&Mode::Normal), "the base is still in the stack");
+    assert!(
+        stack.contains(&Mode::Normal),
+        "the base is still in the stack"
+    );
     assert_eq!(stack.pop(), Some(Mode::Popup));
     assert_eq!(stack.active(), Some(&Mode::Normal));
     assert_eq!(stack.len(), 1);
