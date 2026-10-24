@@ -1,6 +1,6 @@
 [package]
 name = "tui-actions"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 rust-version = "1.85"
 authors = ["Wyatt Au <wyatt_au@protonmail.com>"]
@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/WyattAu/tui-actions"
 homepage = "https://github.com/WyattAu/tui-actions"
 documentation = "https://docs.rs/tui-actions"
-description = "Terminal action/keymap layer for Rust — chord parsing (ctrl+s, leader sequences), modal context stacks, conflict and unbound-key detection, help rows derived from the live keymap. No terminal dependency"
+description = "Terminal action/keymap layer for Rust: chord parsing (ctrl+s, leader sequences), modal context stacks, conflict and unbound-key detection, help rows derived from the live keymap. No terminal dependency"
 readme = "README.md"
 keywords = ["tui", "keymap", "chord", "keyboard", "accessibility"]
 categories = ["command-line-interface"]
